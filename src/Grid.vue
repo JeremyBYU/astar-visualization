@@ -25,6 +25,9 @@
   </div>
   <div class="columns">
     <div class="is-half is-offset-one-quarter column">
+      <p>
+        Touch/Click-Drag to build your Heuristic Map. <br> The darker the red, the more cost/penalty.
+      </p>
       <table class="grid unselectable" @mousedown="startDrag" @touchstart="startDrag" @mousemove="onDrag" @touchmove="onDrag"
       @mouseup="stopDrag" @touchend="stopDrag" @mouseleave="stopDrag" >
           <tr v-for="(row, i) in heuristicGrid">
