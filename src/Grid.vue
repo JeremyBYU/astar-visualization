@@ -26,7 +26,7 @@
   <div class="columns">
     <div class="is-half is-offset-one-quarter column">
       <p>
-        Touch/Click-Drag to build your Heuristic Map. <br> The darker the red, the more cost/penalty.
+        Touch/Click-Drag to build your Cost Map. <br> The darker the red, the more cost/penalty.
       </p>
       <table class="grid unselectable" @mousedown="startDrag" @touchstart="startDrag" @mousemove="onDrag" @touchmove="onDrag"
       @mouseup="stopDrag" @touchend="stopDrag" @mouseleave="stopDrag" >
@@ -71,7 +71,7 @@ export default {
     }
   },
   created() {
-    this._astar = new AStar(costFunction, this.heuristicFunction, {x: this.rows, y: this.cols })
+    this._astar = new AStar(this.totalCostFunction, this.heuristicFunction, {x: this.rows, y: this.cols })
 
   },
   methods: {
@@ -168,7 +168,10 @@ export default {
       return item !== undefined
     },
     heuristicFunction(node, goalNode){
-      return this.heuristicGrid[node.x][node.y] + costFunction(node, goalNode)
+      return costFunction(node, goalNode)
+    },
+    totalCostFunction(node1, node2) {
+      return this.heuristicGrid[node2.x][node2.y] + costFunction(node1,node2)
     },
     reset() {
       this.heuristicGrid = create2DArray(this.rows, this.cols)
