@@ -92,16 +92,22 @@ export default {
       }
     },
     onDrag: function (e) {
-      e = e.changedTouches ? e.changedTouches[0] : e
+      let element = null
+      if (e.changedTouches) {
+        element = document.elementFromPoint(e.changedTouches[0].clientX, e.changedTouches[0].clientY)
+      } else {
+        element = e.target;
+      }
       if (this.dragging) {
-        const row = Number(e.target.getAttribute('index-row'))
-        const col = Number(e.target.getAttribute('index-col'))
+        const row = Number(element.getAttribute('index-row'))
+        const col = Number(element.getAttribute('index-col'))
         const hVal = this.heuristicGrid[row][col] + 1
         if (hVal < 100 && this.markableCell(row, col))
           this.heuristicGrid[row].splice(col, 1, hVal)
       }
     },
     stopDrag: function () {
+      // debugger
       if (this.dragging) {
         this.dragging = false
       }
