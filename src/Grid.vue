@@ -175,7 +175,7 @@ export default {
     },
     reset() {
       this.heuristicGrid = create2DArray(this.rows, this.cols)
-      this._astar = new AStar(costFunction, this.heuristicFunction, {x: this.rows, y: this.cols })
+      this._astar = new AStar(this.totalCostFunction, this.heuristicFunction, {x: this.rows, y: this.cols })
       this.startCell = { x: 0, y: 0 },                          // Starting Cell
       this.endCell = { x: 9, y: 9 },                             // Ending Cell
       this.searching = false,
