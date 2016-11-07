@@ -3,9 +3,9 @@
     <img src="./assets/logo.png">
     <h1>{{ msg }}</h1>
     <div>
-      <grid rows='10' cols='10'>
+    <grid :rows="rows" :cols="cols">
 
-      </grid>
+    </grid>
     </div>
   </div>
 
@@ -20,7 +20,9 @@ export default {
   },
   data () {
     return {
-      msg: 'Welcome to Your Vue.js App'
+      msg: 'Welcome to Your Vue.js App',
+      rows: 10,
+      cols: 10
     }
   }
 }

@@ -114,6 +114,12 @@ assert@^1.1.1:
   dependencies:
     util "0.10.3"
 
+astar-planning@^1.0.0:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/astar-planning/-/astar-planning-1.0.2.tgz#464e3882a6f863a2dab96bbeccc94fd5a31de435"
+  dependencies:
+    lodash "^4.16.6"
+
 async-each@^1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/async-each/-/async-each-1.0.1.tgz#19d386a1d9edc6e7c1c85d388aedbcc56d33602d"
@@ -1979,7 +1985,7 @@ lodash.words@^3.0.0:
   dependencies:
     lodash._root "^3.0.0"
 
-lodash@^4.16.2, lodash@^4.2.0, lodash@^4.3.0:
+lodash@^4.16.2, lodash@^4.16.6, lodash@^4.2.0, lodash@^4.3.0:
   version "4.16.6"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.16.6.tgz#d22c9ac660288f3843e16ba7d2b5d06cca27d777"
 
