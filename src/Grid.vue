@@ -3,11 +3,11 @@
   
   <div class="columns">
     <div class="column is-12" style="padding-bottom: 0px">
-      <a class="button is-success is-outlined"  @click="selectStart = !selectStart" :disabled="selectStart">
+      <a class="button is-success"  @click="selectStart = !selectStart" :disabled="selectStart">
         <div v-show="!selectStart">Choose Starting Cell</div>
         <div v-show="selectStart">Click Any Cell</div>
       </a>
-      <a class="button is-danger is-outlined"  @click="selectGoal = !selectGoal" :disabled="selectGoal">
+      <a class="button is-danger"  @click="selectGoal = !selectGoal" :disabled="selectGoal">
         <div v-show="!selectGoal">Choose End Cell</div>
         <div v-show="selectGoal">Click Any Cell</div>
       </a>
@@ -15,8 +15,11 @@
   </div>
   <div class="columns">
     <div class="column is-12">
-      <a class="button is-primary is-outlined"  @click="findPath">
+      <a class="button is-primary"  @click="findPath">
         <div>Find Path</div>
+      </a>
+      <a class="button is-warning"  @click="reset">
+        <div>Reset</div>
       </a>
     </div>
   </div>
@@ -148,6 +151,14 @@ export default {
     },
     heuristicFunction(node, goalNode){
       return this.heuristicGrid[node.x][node.y] + costFunction(node, goalNode)
+    },
+    reset() {
+      this.heuristicGrid = create2DArray(this.rows, this.cols)
+      this._astar = new AStar(costFunction, this.heuristicFunction, {x: this.rows, y: this.cols })
+      this.startCell = { x: 0, y: 0 },                          // Starting Cell
+      this.endCell = { x: 9, y: 9 },                             // Ending Cell
+      this.searching = false,
+      this.cellPath = []  
     }
   }
 }
