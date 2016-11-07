@@ -1,11 +1,11 @@
 <template>
   <div id="app">
-    <img src="./assets/logo.png">
-    <h1>{{ msg }}</h1>
+    <div class="content">
+      <h1>A* Planning Example</h1>
+    </div>
     <div>
-    <grid :rows="rows" :cols="cols">
-
-    </grid>
+      <grid :rows="rows" :cols="cols">
+      </grid>
     </div>
   </div>
 
@@ -20,7 +20,6 @@ export default {
   },
   data () {
     return {
-      msg: 'Welcome to Your Vue.js App',
       rows: 10,
       cols: 10
     }

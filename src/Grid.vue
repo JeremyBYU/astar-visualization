@@ -1,57 +1,101 @@
 <template>
-<div class="columns">
-  <div class="is-half is-offset-one-quarter column">
-
+<div>
+  
+  <div class="columns">
+    <div class="column is-12" style="padding-bottom: 0px">
+      <a class="button is-success is-outlined"  @click="selectStart = !selectStart" :disabled="selectStart">
+        <div v-show="!selectStart">Choose Starting Cell</div>
+        <div v-show="selectStart">Click Any Cell</div>
+      </a>
+      <a class="button is-danger is-outlined"  @click="selectGoal = !selectGoal" :disabled="selectGoal">
+        <div v-show="!selectGoal">Choose End Cell</div>
+        <div v-show="selectGoal">Click Any Cell</div>
+      </a>
+    </div>
+  </div>
+  <div class="columns">
+    <div class="column is-12">
+      <a class="button is-primary is-outlined"  @click="findPath">
+        <div>Find Path</div>
+      </a>
+    </div>
+  </div>
+  <div class="columns">
+    <div class="is-half is-offset-one-quarter column">
       <table class="grid unselectable" @mousedown="startDrag" @touchstart="startDrag" @mousemove="onDrag" @touchmove="onDrag"
       @mouseup="stopDrag" @touchend="stopDrag" @mouseleave="stopDrag">
           <tr v-for="(row, i) in heuristicGrid">
               <td v-for="(col, j) in row" :index-row="i" :index-col="j" v-bind:style="{ backgroundColor: getColor(col)}">
-                {{col}}
+                <div :index-row="i" :index-col="j" class="circle" 
+                :class="{ circle_green: isStart(i, j), circle_red: isEnd(i,j), circle_open: isOpen(i,j), circle_closed: isClosed(i,j), circle_path: isPath(i,j)}">
+
+                </div>
+                
               </td>
           </tr>
       </table>
-  </div>
+    </div>
 
+  </div>
 </div>
 
 </template>
 
 <script>
 import * as AstarPlanning from 'astar-planning'
-import { shadeColor2, red } from './util'
-const { AStar, Planning, Util } = AstarPlanning.default
+import * as _ from 'lodash'
+import { shadeColor2, red, create2DArray, costFunction } from './util'
+const { AStar, Types, Util } = AstarPlanning.default
+
+// const AStarPlanner = new AStar()
 export default {
   name: 'grid',
   props: ['rows', 'cols'],
   data () {
     return {
       msg: 'Welcome to Your Vue.js App',
-      dragging: false,
-      grid: Util.create2DMap(this.rows, this.cols),
-      heuristicGrid: Util.create2DArray(this.rows, this.cols),
-      selectGoal: false,
-      selectStart: false,
+      dragging: false,                                    // Flag to determine if 
+      heuristicGrid: create2DArray(this.rows, this.cols), // visualization grid
+      selectGoal: false,                                  // Flag to indicate user want to select the goal
+      selectStart: false,                                 // Flag to indicate user wants to select the starting position
+      startCell: { x: 0, y: 0 },                          // Starting Cell
+      endCell: { x: 9, y: 9 },                             // Ending Cell
+      searching: false,
+      cellPath: []                                        // Cell Path
     }
+  },
+  created() {
+    this._astar = new AStar(costFunction, this.heuristicFunction, {x: this.rows, y: this.cols })
+
   },
   methods: {
     startDrag: function (e) {
-      const row = e.target.getAttribute('index-row')
-      const col = e.target.getAttribute('index-col')
-      const newVal = this.heuristicGrid[row][col] + 1
-      if (newVal < 100)
-        this.heuristicGrid[row].splice(col, 1, newVal)
-      this.dragging = true
-
-      console.log(e.x, e.y)
-      },
+      const row = Number(e.target.getAttribute('index-row'))  // get row
+      const col = Number(e.target.getAttribute('index-col'))  // get col
+     //  debugger
+      if (this.selectGoal){           // check if we are currently trying to set a goal
+        this.endCell.x = row
+        this.endCell.y = col
+        this.selectGoal = false
+      } else if(this.selectStart) {   // check if we are curretnly trying to set the starting cell
+        this.startCell.x = row
+        this.startCell.y = col
+        this.selectStart = false
+      } else {                        // we are trying to increment the heuristic cost function
+        const hVal = this.heuristicGrid[row][col].hVal + 1
+        if (hVal < 100 && this.markableCell(row, col))    // only incremnt up to 100 and if its not a start or end goal
+          this.heuristicGrid[row].splice(col, 1, {... this.heuristicGrid[row][col], hVal})
+        this.dragging = true
+      }
+    },
     onDrag: function (e) {
       e = e.changedTouches ? e.changedTouches[0] : e
       if (this.dragging) {
-        const row = e.target.getAttribute('index-row')
-        const col = e.target.getAttribute('index-col')
-        const newVal = this.heuristicGrid[row][col] + 1
-        if (newVal < 100)
-          this.heuristicGrid[row].splice(col, 1, newVal)
+        const row = Number(e.target.getAttribute('index-row'))
+        const col = Number(e.target.getAttribute('index-col'))
+        const hVal = this.heuristicGrid[row][col].hVal + 1
+        if (hVal < 100 && this.markableCell(row, col))
+          this.heuristicGrid[row].splice(col, 1, {... this.heuristicGrid[row][col], hVal})
       }
     },
     stopDrag: function () {
@@ -59,12 +103,55 @@ export default {
         this.dragging = false
       }
     },
-    getColor(val) {
-      const color = shadeColor2(red, 1 - val/100)
+    findPath() {
+      this._astar.initializeSearch(this.startCell, this.endCell)
+      const result = this._astar.findPath()
+      if (typeof result === 'number') {
+        // bad stuff here
+      } else {
+        const cellPath = Util.transformNodestoCells(result)
+        this.cellPath = cellPath
+      }
+      console.log(Util.transformNodestoCells(result))
+    },
+    getColor(cell) {
+      const color = shadeColor2(red, 1 - cell.hVal/100)
       return color
+    },
+    chooseEnd(e) {
+      this.selectGoal = !this.selectGoal
+    },
+    chooseStart(e) {
+      this.selectStart = !this.selectStart
+    },
+    markableCell(i,j) {
+      const markable = !((this.endCell.x === i && this.endCell.y === j) || (this.startCell.x === i && this.startCell.y === j))
+      return markable
+    },
+    isStart(i, j){
+      return i == this.startCell.x && j == this.startCell.y
+    },
+    isEnd(i,j) {
+      return i == this.endCell.x && j == this.endCell.y
+    },
+    isOpen(i,j) {
+      return false
+    },
+    isClosed(i,j) {
+      return false
+    },
+    isPath(i,j) {
+      const item = _.find(this.cellPath, (cell) => {
+        return cell.x === i && cell.y === j
+      })
+      return item !== undefined
+    },
+    heuristicFunction(node, goalNode){
+      return this.heuristicGrid[node.x][node.y].hVal + costFunction(node, goalNode)
     }
   }
 }
+
 </script>
 
 <style>
@@ -88,5 +175,31 @@ export default {
    */
    -ms-user-select: none;
    user-select: none;
+}
+
+.circle
+{
+    padding: 10px 11px;
+    background: none;
+    width: 2px;
+    border-radius: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    width: 1%;
+}
+
+.circle_green
+{
+    background: green;
+}
+
+.circle_red
+{
+    background: red;
+}
+
+.circle_path
+{
+  background: lawngreen
 }
 </style>
