@@ -82,9 +82,9 @@ export default {
         this.startCell.y = col
         this.selectStart = false
       } else {                        // we are trying to increment the heuristic cost function
-        const hVal = this.heuristicGrid[row][col].hVal + 1
+        const hVal = this.heuristicGrid[row][col] + 1
         if (hVal < 100 && this.markableCell(row, col))    // only incremnt up to 100 and if its not a start or end goal
-          this.heuristicGrid[row].splice(col, 1, {... this.heuristicGrid[row][col], hVal})
+          this.heuristicGrid[row].splice(col, 1, hVal)
         this.dragging = true
       }
     },
@@ -93,9 +93,9 @@ export default {
       if (this.dragging) {
         const row = Number(e.target.getAttribute('index-row'))
         const col = Number(e.target.getAttribute('index-col'))
-        const hVal = this.heuristicGrid[row][col].hVal + 1
+        const hVal = this.heuristicGrid[row][col] + 1
         if (hVal < 100 && this.markableCell(row, col))
-          this.heuristicGrid[row].splice(col, 1, {... this.heuristicGrid[row][col], hVal})
+          this.heuristicGrid[row].splice(col, 1, hVal)
       }
     },
     stopDrag: function () {
@@ -114,8 +114,8 @@ export default {
       }
       console.log(Util.transformNodestoCells(result))
     },
-    getColor(cell) {
-      const color = shadeColor2(red, 1 - cell.hVal/100)
+    getColor(hVal) {
+      const color = shadeColor2(red, 1 - hVal/100)
       return color
     },
     chooseEnd(e) {
@@ -147,7 +147,7 @@ export default {
       return item !== undefined
     },
     heuristicFunction(node, goalNode){
-      return this.heuristicGrid[node.x][node.y].hVal + costFunction(node, goalNode)
+      return this.heuristicGrid[node.x][node.y] + costFunction(node, goalNode)
     }
   }
 }

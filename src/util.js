@@ -8,7 +8,7 @@ export function create2DArray(x, y){
     for (let i = 0; i < x; ++i) {
         _map[i] = new Array(y)
         for (let j = 0; j < y; ++j) {
-            _map[i][j] = { isOpen: false, isClosed: false, isStart: false, isEnd: false, hVal: 0, fVal: 0 }
+            _map[i][j] = 0
         }
     }
     return _map
