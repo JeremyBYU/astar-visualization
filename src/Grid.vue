@@ -88,7 +88,7 @@ export default {
         this.startCell.y = col
         this.selectStart = false
       } else {                        // we are trying to increment the heuristic cost function
-        const hVal = this.heuristicGrid[row][col] + 1
+        const hVal = this.heuristicGrid[row][col] + this.getIncrement(this.heuristicGrid[row][col])
         if (hVal < 100 && this.markableCell(row, col))    // only incremnt up to 100 and if its not a start or end goal
           this.heuristicGrid[row].splice(col, 1, hVal)
         this.dragging = true
@@ -104,7 +104,7 @@ export default {
       if (this.dragging) {
         const row = Number(element.getAttribute('index-row'))
         const col = Number(element.getAttribute('index-col'))
-        const hVal = this.heuristicGrid[row][col] + 1
+        const hVal = this.heuristicGrid[row][col] + this.getIncrement(this.heuristicGrid[row][col])
         if (hVal < 100 && this.markableCell(row, col))
           this.heuristicGrid[row].splice(col, 1, hVal)
       }
@@ -113,6 +113,15 @@ export default {
       // debugger
       if (this.dragging) {
         this.dragging = false
+      }
+    },
+    getIncrement(val) {
+      if (val < 10){
+        return 1
+      } else if (val < 30)  {
+        return 2
+      } else {
+        return 3
       }
     },
     findPath() {
