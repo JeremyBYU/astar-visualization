@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div id="app" @touchmove.prevent>
     <div class="content">
       <h1>A* Planning Example</h1>
     </div>

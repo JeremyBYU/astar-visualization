@@ -26,7 +26,7 @@
   <div class="columns">
     <div class="is-half is-offset-one-quarter column">
       <table class="grid unselectable" @mousedown="startDrag" @touchstart="startDrag" @mousemove="onDrag" @touchmove="onDrag"
-      @mouseup="stopDrag" @touchend="stopDrag" @mouseleave="stopDrag">
+      @mouseup="stopDrag" @touchend="stopDrag" @mouseleave="stopDrag" >
           <tr v-for="(row, i) in heuristicGrid">
               <td v-for="(col, j) in row" :index-row="i" :index-col="j" v-bind:style="{ backgroundColor: getColor(col)}">
                 <div :index-row="i" :index-col="j" class="circle" 
