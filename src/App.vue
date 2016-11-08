@@ -1,5 +1,5 @@
 <template>
-  <div id="app" @touchmove.prevent>
+  <div id="app">
     <div class="content">
       <h1>A* Planning Example</h1>
     </div>
@@ -11,8 +11,9 @@
       <div class="container">
         <div class="content has-text-centered">
           <p>
-            <strong>A* Planner</strong> by <a href="http://jeremybyu.github.io/aboutme/">Jeremy Castagno</a>. The A* visualization source code is free and located at
-            <a href="https://github.com/JeremyBYU/astar-visualization">Github</a>. The A* implementation algorithm (written in Typescript) is open source and located <a href="https://github.com/JeremyBYU/astar-planning">here</a>.
+            <strong>A* Planner</strong> by <a href="http://jeremybyu.github.io/aboutme/">Jeremy Castagno</a>. <br>
+            The A* visualization source code is located at <a href="https://github.com/JeremyBYU/astar-visualization">here</a>. 
+            <br>The A* planning algorithm is located <a href="https://github.com/JeremyBYU/astar-planning">here</a>.
           </p>
           <p>
             <a class="icon" href="https://github.com/JeremyBYU">

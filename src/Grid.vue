@@ -1,49 +1,49 @@
 <template>
-<div>
-  
-  <div class="columns">
-    <div class="column is-12" style="padding-bottom: 0px">
-      <a class="button is-success"  @click="selectStart = !selectStart" :disabled="selectStart">
-        <div v-show="!selectStart">Choose Starting Cell</div>
-        <div v-show="selectStart">Click Any Cell</div>
-      </a>
-      <a class="button is-danger"  @click="selectGoal = !selectGoal" :disabled="selectGoal">
-        <div v-show="!selectGoal">Choose End Cell</div>
-        <div v-show="selectGoal">Click Any Cell</div>
-      </a>
-    </div>
-  </div>
-  <div class="columns">
-    <div class="column is-12">
-      <a class="button is-primary"  @click="findPath">
-        <div>Find Path</div>
-      </a>
-      <a class="button is-warning"  @click="reset">
-        <div>Reset</div>
-      </a>
-    </div>
-  </div>
-  <div class="columns">
-    <div class="is-half is-offset-one-quarter column">
-      <p>
-        Touch/Click-Drag to build your Cost Map. <br> The darker the red, the more cost/penalty.
-      </p>
-      <table class="grid unselectable" @mousedown="startDrag" @touchstart="startDrag" @mousemove="onDrag" @touchmove="onDrag"
-      @mouseup="stopDrag" @touchend="stopDrag" @mouseleave="stopDrag" >
-          <tr v-for="(row, i) in heuristicGrid">
-              <td v-for="(col, j) in row" :index-row="i" :index-col="j" v-bind:style="{ backgroundColor: getColor(col)}">
-                <div :index-row="i" :index-col="j" class="circle" 
-                :class="{ circle_green: isStart(i, j), circle_red: isEnd(i,j), circle_open: isOpen(i,j), circle_closed: isClosed(i,j), circle_path: isPath(i,j)}">
+	<div>
 
-                </div>
-                
-              </td>
-          </tr>
-      </table>
-    </div>
+		<div class="columns">
+			<div class="column is-12" style="padding-bottom: 0px">
+				<a class="button is-success" @click="selectStart = !selectStart" :disabled="selectStart">
+					<div v-show="!selectStart">Choose Starting Cell</div>
+					<div v-show="selectStart">Click Any Cell</div>
+				</a>
+				<a class="button is-danger" @click="selectGoal = !selectGoal" :disabled="selectGoal">
+					<div v-show="!selectGoal">Choose End Cell</div>
+					<div v-show="selectGoal">Click Any Cell</div>
+				</a>
+			</div>
+		</div>
+		<div class="columns">
+			<div class="column is-12">
+				<a class="button is-primary" @click="findPath">
+					<div>Find Path</div>
+				</a>
+				<a class="button is-warning" @click="reset">
+					<div>Reset</div>
+				</a>
+			</div>
+		</div>
+		<div class="columns">
+			<div class="is-half is-offset-one-quarter column">
+				<p>
+					Touch/Click-Drag to build your Cost Map. <br> The darker the red, the more cost/penalty.
+				</p>
+				<div @touchmove.prevent>
+					<table class="grid unselectable" @mousedown="startDrag" @touchstart="startDrag" @mousemove="onDrag" @touchmove="onDrag" @mouseup="stopDrag"
+						@touchend="stopDrag" @mouseleave="stopDrag">
+						<tr v-for="(row, i) in heuristicGrid">
+							<td v-for="(col, j) in row" :index-row="i" :index-col="j" v-bind:style="{ backgroundColor: getColor(col)}">
+								<div :index-row="i" :index-col="j" class="circle" :class="{ circle_green: isStart(i, j), circle_red: isEnd(i,j), circle_open: isOpen(i,j), circle_closed: isClosed(i,j), circle_path: isPath(i,j)}">
+								</div>
 
-  </div>
-</div>
+							</td>
+						</tr>
+					</table>
+				</div>
+			</div>
+
+		</div>
+	</div>
 
 </template>
 
@@ -87,10 +87,10 @@ export default {
         this.startCell.x = row
         this.startCell.y = col
         this.selectStart = false
-      } else {                        // we are trying to increment the heuristic cost function
+      } else {                        // we are trying to increment the cost function
         const hVal = this.heuristicGrid[row][col] + this.getIncrement(this.heuristicGrid[row][col])
         if (hVal < 100 && this.markableCell(row, col))    // only incremnt up to 100 and if its not a start or end goal
-          this.heuristicGrid[row].splice(col, 1, hVal)
+          this.heuristicGrid[row].splice(col, 1, hVal)    // how to increment reactively in VueJS
         this.dragging = true
       }
     },
@@ -129,6 +129,7 @@ export default {
       const result = this._astar.findPath()
       if (typeof result === 'number') {
         // bad stuff here
+        // TODO add notification here
       } else {
         const cellPath = Util.transformNodestoCells(result)
         this.cellPath = cellPath
@@ -146,7 +147,7 @@ export default {
       this.selectStart = !this.selectStart
     },
     markableCell(i,j) {
-      const markable = !((this.endCell.x === i && this.endCell.y === j) || (this.startCell.x === i && this.startCell.y === j))
+      const markable = !(this.isStart(i,j) || this.isEnd(i,j))
       return markable
     },
     isStart(i, j){
@@ -156,9 +157,11 @@ export default {
       return i == this.endCell.x && j == this.endCell.y
     },
     isOpen(i,j) {
+      // TODO implement open node visualization
       return false
     },
     isClosed(i,j) {
+      // TODO implement open node visualization
       return false
     },
     isPath(i,j) {
@@ -174,6 +177,7 @@ export default {
       return this.heuristicGrid[node2.x][node2.y] + costFunction(node1,node2)
     },
     reset() {
+      // Everything must Go!! Let the garbage collector get to work!
       this.heuristicGrid = create2DArray(this.rows, this.cols)
       this._astar = new AStar(this.totalCostFunction, this.heuristicFunction, {x: this.rows, y: this.cols })
       this.startCell = { x: 0, y: 0 },                          // Starting Cell
@@ -187,51 +191,53 @@ export default {
 </script>
 
 <style>
-.grid { margin:1em auto; border-collapse:collapse }
-.grid td {
-    cursor:pointer;
-    width:30px; height:30px;
-    border:1px solid #ccc;
-    text-align:center;
-    font-family:sans-serif; font-size:13px;
-    vertical-align: inherit;
-}
-*.unselectable {
-   -moz-user-select: -moz-none;
-   -khtml-user-select: none;
-   -webkit-user-select: none;
-
-   /*
+	.grid {
+		margin: 1em auto;
+		border-collapse: collapse
+	}
+	
+	.grid td {
+		cursor: pointer;
+		width: 30px;
+		height: 30px;
+		border: 1px solid #ccc;
+		text-align: center;
+		font-family: sans-serif;
+		font-size: 13px;
+		vertical-align: inherit;
+	}
+	
+	*.unselectable {
+		-moz-user-select: -moz-none;
+		-khtml-user-select: none;
+		-webkit-user-select: none;
+		/*
      Introduced in IE 10.
      See http://ie.microsoft.com/testdrive/HTML5/msUserSelect/
    */
-   -ms-user-select: none;
-   user-select: none;
-}
-
-.circle
-{
-    padding: 10px 11px;
-    background: none;
-    width: 2px;
-    border-radius: 100%;
-    margin-left: auto;
-    margin-right: auto;
-    width: 1%;
-}
-
-.circle_green
-{
-    background: green;
-}
-
-.circle_red
-{
-    background: red;
-}
-
-.circle_path
-{
-  background: lawngreen
-}
+		-ms-user-select: none;
+		user-select: none;
+	}
+	
+	.circle {
+		padding: 10px 11px;
+		background: none;
+		width: 2px;
+		border-radius: 100%;
+		margin-left: auto;
+		margin-right: auto;
+		width: 1%;
+	}
+	
+	.circle_green {
+		background: green;
+	}
+	
+	.circle_red {
+		background: red;
+	}
+	
+	.circle_path {
+		background: lawngreen
+	}
 </style>
