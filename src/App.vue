@@ -12,7 +12,7 @@
         <div class="content has-text-centered">
           <p>
             <strong>A* Planner</strong> by <a href="http://jeremybyu.github.io/aboutme/">Jeremy Castagno</a>. <br>
-            The A* visualization source code is located<a href="https://github.com/JeremyBYU/astar-visualization">here</a>. 
+            The A* visualization source code is located <a href="https://github.com/JeremyBYU/astar-visualization">here</a>. 
             <br>The A* planning algorithm is located <a href="https://github.com/JeremyBYU/astar-planning">here</a>.
           </p>
           <p>
